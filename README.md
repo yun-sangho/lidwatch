@@ -6,16 +6,9 @@ Built on IOKit's `IOServiceAddInterestNotification`: zero polling, zero CPU when
 
 ## Why
 
-Normally closing the lid puts the Mac to sleep, which turns every display off. But in a lot of real setups sleep is blocked:
+Closing the lid normally sleeps the Mac and turns displays off. But when sleep is blocked — `pmset disablesleep`, `caffeinate`/Amphetamine, or any background process holding a sleep assertion — the internal panel stays powered on after you close the lid. This includes clamshell mode combined with any of the above.
 
-- **Clamshell mode** — external display attached, so macOS keeps the Mac awake.
-- **`sudo pmset -a disablesleep 1`** (a.k.a. `SleepDisabled`) — sleep disabled at the system level.
-- **`caffeinate`, Amphetamine, KeepingYouAwake**, or any process holding a `PreventUserIdleSystemSleep` assertion.
-- Background tasks (file sharing, Time Machine, screen recording, Handoff, audio playback) silently holding display-sleep assertions.
-
-In all of these the internal panel stays powered on after you close the lid — sometimes visibly glowing through the hinge. lidwatch catches the lid-close event and calls `pmset displaysleepnow`, which turns the display off **without** needing the system to sleep. Works in every scenario above.
-
-Common solutions poll `ioreg` every few seconds. This one subscribes to the kernel's IOKit notification directly, so it reacts instantly and uses no CPU while idle.
+lidwatch subscribes to the kernel's lid-close event and calls `pmset displaysleepnow`, turning the display off without needing the system to sleep. Event-driven, no polling, zero CPU while idle.
 
 ## Install
 
