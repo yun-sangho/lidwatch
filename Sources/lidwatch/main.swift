@@ -4,7 +4,7 @@ import IOKit
 // MARK: - Constants
 
 let appName = "lidwatch"
-let version = "0.1.0"
+let version = "0.1.1"
 
 // MARK: - State file (enable/disable flag)
 
@@ -169,16 +169,27 @@ func printStatus() {
         print("clamshell: unknown")
     }
 
-    // Is the LaunchAgent loaded?
+    // Is any lidwatch agent loaded? Covers both manual install
+    // (com.lidwatch.agent) and Homebrew (homebrew.mxcl.lidwatch).
     let task = Process()
     task.launchPath = "/bin/launchctl"
-    task.arguments = ["list", "com.lidwatch.agent"]
+    task.arguments = ["list"]
     let pipe = Pipe()
     task.standardOutput = pipe
     task.standardError = Pipe()
     try? task.run()
     task.waitUntilExit()
-    print("agent:     \(task.terminationStatus == 0 ? "loaded" : "not loaded")")
+    let out = String(data: pipe.fileHandleForReading.readDataToEndOfFile(),
+                     encoding: .utf8) ?? ""
+    let matches = out.split(separator: "\n").filter {
+        $0.contains("com.lidwatch.agent") || $0.contains("homebrew.mxcl.lidwatch")
+    }
+    if let line = matches.first {
+        let label = line.split(separator: "\t").last.map(String.init) ?? "loaded"
+        print("agent:     loaded (\(label))")
+    } else {
+        print("agent:     not loaded")
+    }
 }
 
 let args = Array(CommandLine.arguments.dropFirst())
