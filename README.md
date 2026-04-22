@@ -21,6 +21,18 @@ Common solutions poll `ioreg` every few seconds. This one subscribes to the kern
 
 Requires Xcode Command Line Tools (`xcode-select --install`). No Apple Developer account needed — the tool is compiled locally on your Mac.
 
+### Homebrew (recommended)
+
+```bash
+brew install yun-sangho/tap/lidwatch && \
+  brew services start lidwatch && \
+  lidwatch enable
+```
+
+Upgrade: `brew upgrade lidwatch` — Uninstall: `brew services stop lidwatch && brew uninstall lidwatch`.
+
+### From source
+
 ```bash
 git clone https://github.com/yun-sangho/lidwatch.git
 cd lidwatch
