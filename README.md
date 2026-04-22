@@ -15,7 +15,7 @@ Common solutions poll `ioreg` every few seconds. This one subscribes to the kern
 Requires Xcode Command Line Tools (`xcode-select --install`). No Apple Developer account needed — the tool is compiled locally on your Mac.
 
 ```bash
-git clone <this-repo> lidwatch
+git clone https://github.com/yun-sangho/lidwatch.git
 cd lidwatch
 ./install.sh
 ```
