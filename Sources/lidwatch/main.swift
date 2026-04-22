@@ -4,7 +4,7 @@ import IOKit
 // MARK: - Constants
 
 let appName = "lidwatch"
-let version = "0.1.2"
+let version = "0.1.3"
 
 // MARK: - State file (enable/disable flag)
 
@@ -13,12 +13,18 @@ func stateDirectory() -> String {
     return "\(home)/Library/Application Support/\(appName)"
 }
 
+// State file semantics (v0.1.3+): the file's *presence* means the user
+// has explicitly disabled the watcher. Absence = enabled (default).
+// The file lives at the old "enabled" path for backward compatibility
+// with any user who had it; v0.1.2 and earlier treated it as the
+// enabled flag — upgrading users will briefly behave differently but
+// the behavior converges once they run enable/disable once.
 func stateFilePath() -> String {
-    return "\(stateDirectory())/enabled"
+    return "\(stateDirectory())/disabled"
 }
 
 func isEnabled() -> Bool {
-    return FileManager.default.fileExists(atPath: stateFilePath())
+    return !FileManager.default.fileExists(atPath: stateFilePath())
 }
 
 func setEnabled(_ enabled: Bool) throws {
@@ -28,12 +34,14 @@ func setEnabled(_ enabled: Bool) throws {
     )
     let path = stateFilePath()
     if enabled {
-        if !FileManager.default.fileExists(atPath: path) {
-            FileManager.default.createFile(atPath: path, contents: nil)
-        }
-    } else {
+        // Enabled = disabled-marker absent. Remove it if present.
         if FileManager.default.fileExists(atPath: path) {
             try FileManager.default.removeItem(atPath: path)
+        }
+    } else {
+        // Disabled = marker present.
+        if !FileManager.default.fileExists(atPath: path) {
+            FileManager.default.createFile(atPath: path, contents: nil)
         }
     }
 }
@@ -141,15 +149,15 @@ func printUsage() {
 
     USAGE:
       \(appName) watch             run the event watcher (used by LaunchAgent)
-      \(appName) enable            turn on display-sleep-on-close
-      \(appName) disable           turn it off
+      \(appName) disable           pause display-sleep-on-close without stopping the agent
+      \(appName) enable            resume (remove the disable marker)
       \(appName) toggle            flip the enabled state
       \(appName) status            show current state + clamshell
       \(appName) help              this message
       \(appName) version           print version
 
-    The watcher only takes action when enabled. Use launchctl (or the
-    install script) to run the watcher at login.
+    Enabled by default after install. Run `\(appName) disable` to pause
+    without stopping the background agent.
     """
     print(usage)
 }
@@ -157,7 +165,9 @@ func printUsage() {
 func printStatus() {
     print("\(appName) \(version)")
     print("enabled:   \(isEnabled())")
-    print("state file: \(stateFilePath())")
+    let marker = FileManager.default.fileExists(atPath: stateFilePath())
+        ? "present" : "absent"
+    print("disable marker: \(marker) (\(stateFilePath()))")
 
     let rootDomain = IOServiceGetMatchingService(
         kIOMainPortDefault, IOServiceMatching("IOPMrootDomain")

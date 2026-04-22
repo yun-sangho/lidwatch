@@ -36,12 +36,9 @@ echo ":: loading LaunchAgent"
 launchctl unload "$PLIST_DEST" 2>/dev/null || true
 launchctl load "$PLIST_DEST"
 
-echo ":: enabling (flag file)"
-"$BINARY_DEST" enable
-
 cat <<EOF
 
-✅ installed.
+✅ installed. Enabled by default.
 
   binary:  $BINARY_DEST
   plist:   $PLIST_DEST

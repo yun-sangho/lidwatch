@@ -24,10 +24,10 @@ Requires Xcode Command Line Tools (`xcode-select --install`). No Apple Developer
 ### Homebrew (recommended)
 
 ```bash
-brew install yun-sangho/tap/lidwatch && \
-  brew services start lidwatch && \
-  lidwatch enable
+brew install yun-sangho/tap/lidwatch && brew services start lidwatch
 ```
+
+That's it. Enabled by default; lid close will sleep the display immediately.
 
 Upgrade: `brew upgrade lidwatch` — Uninstall: `brew services stop lidwatch && brew uninstall lidwatch`.
 
@@ -52,11 +52,13 @@ Uninstall with `./uninstall.sh`.
 
 ```
 lidwatch status       # show current state + LaunchAgent status
-lidwatch enable       # turn on
-lidwatch disable      # turn off (agent keeps running, but acts as a no-op)
+lidwatch disable      # pause (agent keeps running, but acts as a no-op)
+lidwatch enable       # resume
 lidwatch toggle
 lidwatch watch        # run the watcher in foreground (for testing)
 ```
+
+Enabled by default after install; `disable` is for temporarily pausing without stopping the service.
 
 Live logs:
 
