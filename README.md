@@ -1,14 +1,21 @@
 # lidwatch
 
-Event-driven helper that turns off your Mac's display the moment you close the lid — even when an external display keeps the Mac awake (clamshell mode).
+Turns off your Mac's internal display the moment you close the lid — **even when macOS can't or won't sleep**.
 
 Built on IOKit's `IOServiceAddInterestNotification`: zero polling, zero CPU when idle, sub-millisecond reaction time.
 
 ## Why
 
-In clamshell mode macOS does not sleep the internal display when you close the lid, because the lid state alone doesn't trigger a power transition. That leaves the internal panel powered on and sometimes visible through the hinge gap. A tiny watcher that calls `pmset displaysleepnow` on the close event solves it.
+Normally closing the lid puts the Mac to sleep, which turns every display off. But in a lot of real setups sleep is blocked:
 
-Common solutions poll `ioreg` every few seconds. This one subscribes to the kernel's IOKit notification directly.
+- **Clamshell mode** — external display attached, so macOS keeps the Mac awake.
+- **`sudo pmset -a disablesleep 1`** (a.k.a. `SleepDisabled`) — sleep disabled at the system level.
+- **`caffeinate`, Amphetamine, KeepingYouAwake**, or any process holding a `PreventUserIdleSystemSleep` assertion.
+- Background tasks (file sharing, Time Machine, screen recording, Handoff, audio playback) silently holding display-sleep assertions.
+
+In all of these the internal panel stays powered on after you close the lid — sometimes visibly glowing through the hinge. lidwatch catches the lid-close event and calls `pmset displaysleepnow`, which turns the display off **without** needing the system to sleep. Works in every scenario above.
+
+Common solutions poll `ioreg` every few seconds. This one subscribes to the kernel's IOKit notification directly, so it reacts instantly and uses no CPU while idle.
 
 ## Install
 
