@@ -4,7 +4,7 @@ import IOKit
 // MARK: - Constants
 
 let appName = "lidwatch"
-let version = "0.1.1"
+let version = "0.1.2"
 
 // MARK: - State file (enable/disable flag)
 
