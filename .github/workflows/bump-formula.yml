@@ -52,7 +52,7 @@ jobs:
       - name: Checkout tap repo
         uses: actions/checkout@v4
         with:
-          repository: yun-sangho/homebrew-tap
+          repository: ${{ github.repository_owner }}/homebrew-tap
           token: ${{ secrets.TAP_TOKEN }}
           path: tap
 
