@@ -17,7 +17,7 @@ Requires Xcode Command Line Tools (`xcode-select --install`). No Apple Developer
 ### Homebrew (recommended)
 
 ```bash
-brew install sanghoysh/tap/lidwatch && brew services start lidwatch
+brew install forkysh/tap/lidwatch && brew services start lidwatch
 ```
 
 That's it. Enabled by default; lid close will sleep the display immediately.
@@ -27,7 +27,7 @@ Upgrade: `brew upgrade lidwatch` — Uninstall: `brew services stop lidwatch && 
 ### From source
 
 ```bash
-git clone https://github.com/sanghoysh/lidwatch.git
+git clone https://github.com/forkysh/lidwatch.git
 cd lidwatch
 ./install.sh
 ```

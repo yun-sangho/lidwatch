@@ -52,7 +52,7 @@ jobs:
       - name: Checkout tap repo
         uses: actions/checkout@v4
         with:
-          repository: sanghoysh/homebrew-tap
+          repository: forkysh/homebrew-tap
           token: ${{ secrets.TAP_TOKEN }}
           path: tap
 
